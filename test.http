@@ -1,0 +1,15 @@
+POST http://localhost:8080/api/assets
+Content-Type: application/json
+
+{
+    "asset_name": "server1",
+    "type": "Server",
+    "status": "Active",
+    "location": "DataCenter 1",
+    "ip_address": "192.168.1.1",
+    "cpu_usage": "20",
+    "memory_usage": "30",
+    "disk_usage":"40",
+    "network_usage": "10",
+    "last_date": "2026-08-01"
+}
