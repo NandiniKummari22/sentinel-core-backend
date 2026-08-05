@@ -28,8 +28,8 @@ public class Asset {
     @Column(name = "asset_name", nullable = false)
     private String asset_name;
 
-    @Column(name = "type", nullable = false)
-    private String type;
+    @Column(name = "asset_type", nullable = false)
+    private String asset_type;
 
     @Column(name = "status", nullable = false)
     private String status;
@@ -52,7 +52,7 @@ public class Asset {
     @Column(name = "network_usage", nullable = false)
     private String network_usage;
 
-    @Column(name = "last_date", nullable = false)
+    @Column(name = "last_date")
     private String last_date;
 
 }

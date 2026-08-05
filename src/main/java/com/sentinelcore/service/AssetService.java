@@ -31,7 +31,7 @@ public class AssetService {
     public AssetDTO createAsset(AssetDTO assetDTO) {
         Asset asset = Asset.builder()
                 .asset_name(assetDTO.getAsset_name())
-                .type(assetDTO.getType())
+                .asset_type(assetDTO.getAsset_type())
                 .status(assetDTO.getStatus())
                 .location(assetDTO.getLocation())
                 .ip_address(assetDTO.getIp_address())
@@ -50,7 +50,7 @@ public class AssetService {
         return AssetDTO.builder()
                 .id(asset.getId())
                 .asset_name(asset.getAsset_name())
-                .type(asset.getType())
+                .asset_type(asset.getAsset_type())
                 .status(asset.getStatus())
                 .location(asset.getLocation())
                 .ip_address(asset.getIp_address())

@@ -17,8 +17,8 @@ public class AssetDTO {
     @JsonProperty("asset_name")
     private String asset_name;
 
-    @JsonProperty("type")
-    private String type;
+    @JsonProperty("asset_type")
+    private String asset_type;
 
     @JsonProperty("status")
     private String status;
@@ -50,8 +50,8 @@ public class AssetDTO {
     public String getStatus() {
         return status;
     }
-    public String getType() {
-        return type;
+    public String getAsset_type() {
+        return asset_type;
     }
     public String getIp_address() {
         return ip_address;
