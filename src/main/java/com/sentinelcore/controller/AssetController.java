@@ -3,6 +3,7 @@ package com.sentinelcore.controller;
 import java.util.List;
 import org.springframework.web.bind.annotation.RestController;
 import com.sentinelcore.dto.AssetDTO;
+import com.sentinelcore.dto.DashboardSummaryDTO;
 import com.sentinelcore.service.AssetService;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,7 +23,7 @@ public class AssetController {
         this.assetService = assetService;
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/id/{id}")
     public AssetDTO getAssetById(@PathVariable Long id) {
         return assetService.getAssetById(id);
     }
@@ -36,5 +37,11 @@ public class AssetController {
     public AssetDTO createAsset(@RequestBody AssetDTO assetDTO) {
         System.out.println("Received asset creation request: " + assetDTO);
         return assetService.createAsset(assetDTO);
+
+    }
+
+    @GetMapping("/dashboard/summary")
+    public DashboardSummaryDTO getDashboardSummary(){
+        return assetService.getDashboardSummary();
     }
 }
