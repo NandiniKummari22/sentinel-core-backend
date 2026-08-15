@@ -18,7 +18,7 @@ public class AssetDTO {
     private String asset_name;
 
     @JsonProperty("asset_type")
-    private String asset_type;
+    private String assetType;
 
     @JsonProperty("status")
     private String status;
@@ -30,16 +30,16 @@ public class AssetDTO {
     private String ip_address;
     
     @JsonProperty("cpu_usage")
-    private String cpu_usage;
+    private Double cpu_usage;
 
     @JsonProperty("memory_usage")
-    private String memory_usage;
+    private Double memory_usage;
 
     @JsonProperty("disk_usage")
-    private String disk_usage;
+    private Double disk_usage;
     
     @JsonProperty("network_usage")
-    private String network_usage;
+    private Double network_usage;
     
     @JsonProperty("last_date")
     private String last_date;
@@ -50,8 +50,8 @@ public class AssetDTO {
     public String getStatus() {
         return status;
     }
-    public String getAsset_type() {
-        return asset_type;
+    public String getAssetType() {
+        return assetType;
     }
     public String getIp_address() {
         return ip_address;
@@ -59,16 +59,16 @@ public class AssetDTO {
     public String getLocation() {
         return location;
     }
-    public String getCpu_usage() {
+    public Double getCpu_usage() {
         return cpu_usage;
     }
-    public String getDisk_usage() {
+    public Double getDisk_usage() {
         return disk_usage;
     }
-    public String getMemory_usage() {
+    public Double getMemory_usage() {
         return memory_usage;
     }
-    public String getNetwork_usage() {
+    public Double getNetwork_usage() {
         return network_usage;
     }
     public String getLast_date() {

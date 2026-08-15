@@ -6,5 +6,5 @@ import com.sentinelcore.Entity.Asset;
 
 public interface AssetRepository extends JpaRepository<Asset, Long> {
     List<Asset> findByStatus(String status);
-    List<Asset> findByType(String type);
+    List<Asset> findByAssetType(String type);
 }
