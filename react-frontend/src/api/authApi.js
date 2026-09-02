@@ -1,5 +1,11 @@
 import axios from 'axios';
 
-export const login = (username, password) => {
-    return axios.post('/api/auth/login', { username, password });
-}
+const AUTH_BASE = 'http://localhost:8080/api/auth';
+
+export const login= (username,password) => {
+    return axios.post(`${AUTH_BASE}/login`, {username, password});
+};
+
+export const refreshAccessToken = (refreshToken) =>{
+    return axios.post(`${AUTH_BASE}/refresh`, {refreshToken});
+};

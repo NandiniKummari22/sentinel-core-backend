@@ -1,69 +1,61 @@
 import { useState } from "react";
+import { login } from "../api/authApi"; 
+import { useAuth } from "../context/AuthContext";
+import { TextField, Button, Card, CardContent, Typography, Alert } from "@mui/material";
 import axios from "axios";
 
-function Login({ onLogin }) {
+function Login( { onLoginSuccess }) {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
-    const [message, setMessage] = useState("");
+    const [error, setError] = useState("");
+    const { loginUser } = useAuth();
 
-    const handleLogin = async (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
+        setError("");
 
         try {
-            const response = await axios.post(
-                "http://localhost:8080/auth/login",
-                {
-                    username: username,
-                    password: password
-                }
-            );
-
-            const token = response.data.token;
-
-            // Store the JWT token
-            localStorage.setItem("token", token);
-
-            axios.defaults.headers.common["Authorization"]=`Bearer ${token}`;
-
-            setMessage("Login successful!");
-
-            // Tell App.jsx that login succeeded
-            onLogin(token);
-
-        } catch (error) {
-            console.error(error);
-            setMessage("Login failed. Check username and password.");
+            const res = await login(username, password);
+            console.log("LOGIN RESPONSE: ",res.data);
+            loginUser(res.data.accessToken, res.data.refreshToken);
+            onLoginSuccess();
+        } catch (err) {
+            console.log("LOGIN ERROR: ",err);
+            setError("Invalid username or password.");
         }
     };
 
     return (
-        <div>
-            <h2>SentinelCore Login</h2>
-
-            <form onSubmit={handleLogin}>
-                <div>
-                    <label>Username:</label>
-                    <input
-                        type="text"
+        <Card sx={{ maxWidth: 400, margin: "auto", mt: 10 }}>
+            <CardContent>
+                <Typography variant="h5" component="div" gutterBottom>
+                    SentinelCore Login
+                </Typography>
+                {error && <Alert severity="error">{error}</Alert>}
+                <form onSubmit={handleSubmit}>
+                    <TextField
+                        label="Username"
+                        variant="outlined"
+                        fullWidth
+                        margin="normal"
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
                     />
-                </div>
-
-                <div>
-                    <label>Password:</label>
-                    <input
+                    <TextField
+                        label="Password"
+                        variant="outlined"
+                        fullWidth
+                        margin="normal"
                         type="password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                     />
-                </div>
-
-                <button type="submit">Login</button>
-            </form>
-
-            {message && <p>{message}</p>}
-        </div>
+                    <Button fullWidth variant="contained" type="submit" style={{marginTop: "16px"}}>
+                        LOGIN
+                    </Button>
+                </form>
+            </CardContent>
+        </Card>
     );
 }
 

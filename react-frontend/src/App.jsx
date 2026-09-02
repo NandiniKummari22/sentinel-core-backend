@@ -3,16 +3,14 @@ import Login from "./components/Login";
 import Dashboard from "./components/Dashboard";
 
 function App() {
-    const [token, setToken] = useState(
-        localStorage.getItem("token")
-    );
+    const [loggedIn, setLoggedIn] = useState(false);
 
-    const handleLogin = (newToken) => {
-        setToken(newToken);
+    const handleLogin = () => {
+        setLoggedIn(true);
     };
 
-    if (!token) {
-        return <Login onLogin={handleLogin} />;
+    if (!loggedIn) {
+        return <Login onLoginSuccess={handleLogin} />;
     }
 
     return <Dashboard />;

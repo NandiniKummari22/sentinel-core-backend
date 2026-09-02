@@ -7,6 +7,8 @@ import com.sentinelcore.Entity.Asset;
 import com.sentinelcore.repository.AssetRepository;
 import org.springframework.stereotype.Service;
 import com.sentinelcore.dto.DashboardSummaryDTO;
+import com.sentinelcore.repository.AssetSpecification;
+import org.springframework.data.jpa.domain.Specification;
 
 
 @Service
@@ -87,4 +89,19 @@ public class AssetService {
                 .last_date(asset.getLast_date())
                 .build();
     }
+
+    public List<Asset> searchAndFilter(
+        String search,
+        String status,
+        String risk) {
+
+    Specification<Asset> specification =
+            AssetSpecification.searchAssets(
+                    search,
+                    status,
+                    risk
+            );
+
+    return assetRepository.findAll(specification);
+ }    
 }

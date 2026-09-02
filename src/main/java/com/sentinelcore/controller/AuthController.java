@@ -4,6 +4,9 @@ import com.sentinelcore.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import java.util.Map;
+import com.sentinelcore.Entity.User;
+import com.sentinelcore.repository.UserRepository;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -11,19 +14,49 @@ import java.util.Map;
 @CrossOrigin(origins = "http://localhost:5173") 
 public class AuthController {
     private final JwtUtil jwtUtil;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    @PostMapping("/login")
-    public Map<String, String> login(@RequestBody Map<String, String> credentials) {
-        String username = credentials.get("username");
-        String password = credentials.get("password");
+@PostMapping("/login")
+public Map<String, String> login(@RequestBody Map<String, String>
+credentials) {
 
-        // For demonstration purposes, we are using hardcoded credentials.
-        // In a real application, you should validate against a database or another user store.
-        if ("admin".equals(username) && "admin123".equals(password)) {
-            String token = jwtUtil.generateToken(username);
-            return Map.of("token", token);
-        } else {
-            throw new RuntimeException("Invalid credentials");
-        }
-    }
+String username = credentials.get("username");
+String rawPassword = credentials.get("password");
+User user = userRepository.findByUsername(username)
+    .orElseThrow(() -> new RuntimeException("Invalid credentials"));
+
+if (!passwordEncoder.matches(rawPassword, user.getPassword())) {
+throw new RuntimeException("Invalid credentials");
+}
+String role = user.getRoles()
+        .stream()
+        .findFirst()
+        .map(r -> r.getName())
+        .orElseThrow(() -> new RuntimeException("User has no role"));
+
+String accessToken = jwtUtil.generateToken(username,role);
+String refreshToken = jwtUtil.generateRefreshToken(username);
+return Map.of("accessToken", accessToken, "refreshToken",
+
+refreshToken);
+}
+
+@PostMapping("/refresh")
+public Map<String, String> refresh(@RequestBody Map<String, String>
+body) {
+
+String refreshToken = body.get("refreshToken");
+
+if (!jwtUtil.isTokenValid(refreshToken)) {
+throw new RuntimeException("Invalid or expired refresh token");
+}
+String username = jwtUtil.extractUsername(refreshToken);
+String role = jwtUtil.extractRole(refreshToken);
+
+String newAccessToken = jwtUtil.generateToken(username, role);
+
+return Map.of("accessToken", newAccessToken);
+
+}
 }

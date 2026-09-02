@@ -28,6 +28,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             FilterChain filterChain)
             throws ServletException, IOException {
 
+            if (request.getRequestURI().equals("/api/sms/test")) {
+                filterChain.doFilter(request, response);
+                return;
+            }
+
         String authHeader = request.getHeader("Authorization");
 
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
@@ -37,13 +42,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
                 String username = jwtUtil.extractUsername(token);
 
-                UsernamePasswordAuthenticationToken authentication =
-                        new UsernamePasswordAuthenticationToken(
-                                username,
-                                null,
-                                java.util.Collections.emptyList()
-                        );
+                String role = jwtUtil.extractRole(token);
 
+                System.out.println("JWT ROLE = "+role);
+
+            UsernamePasswordAuthenticationToken authentication =
+                new UsernamePasswordAuthenticationToken(
+                username,
+                null,
+                java.util.Collections.singletonList(
+                        new org.springframework.security.core.authority.SimpleGrantedAuthority(role)
+                )
+        );
                 SecurityContextHolder.getContext()
                         .setAuthentication(authentication);
             }

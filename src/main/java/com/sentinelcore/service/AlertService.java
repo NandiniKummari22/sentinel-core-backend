@@ -17,6 +17,7 @@ public class AlertService {
 
     private final AssetRepository assetRepository;
     private final AlertRepository alertRepository;
+    private final NotificationService notificationService;
     
     public List<AlertDTO> getOpenAlerts() {
         return alertRepository.findByStatus(Alert.AlertStatus.OPEN)
@@ -26,16 +27,28 @@ public class AlertService {
     }
 
     public AlertDTO createAlert(Long assetId, String severity, String message) {
-        Asset asset=assetRepository.findById(assetId)
-            .orElseThrow(() -> new RuntimeException("Asset not found with id: " + assetId));
-        Alert alert = Alert.builder()
-            .asset(asset)
-            .severity(Alert.AlertSeverity.valueOf(severity))
-            .message(message)
-            .status(Alert.AlertStatus.OPEN)
-            .createdAt(LocalDateTime.now())
-            .build();
-        return toDTO(alertRepository.save(alert));
+        
+        Asset asset = assetRepository.findById(assetId)
+            .orElseThrow(() -> new RuntimeException("Asset not found: " + assetId));
+
+        Alert alert=new Alert();
+        alert.setAsset(asset);
+        alert.setSeverity(Alert.AlertSeverity.valueOf(severity.toUpperCase()));
+        alert.setMessage(message);
+        alert.setStatus(Alert.AlertStatus.OPEN);
+
+        Alert savedAlert= alertRepository.save(alert);
+
+        if (alert.getSeverity() == Alert.AlertSeverity.CRITICAL ||
+        alert.getSeverity() == Alert.AlertSeverity.HIGH) {
+        notificationService.sendAlertEmail(
+            "ops-team@sentinelcore.local",
+            asset.getAsset_name(),
+            alert.getSeverity().name(),
+            alert.getMessage()
+            );
+        }
+        return toDTO(savedAlert);
     }
 
     public AlertDTO resolveAlert(Long alertId) {
