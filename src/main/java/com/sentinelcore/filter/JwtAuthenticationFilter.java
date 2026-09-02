@@ -28,10 +28,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             FilterChain filterChain)
             throws ServletException, IOException {
 
-            if (request.getRequestURI().equals("/api/sms/test")) {
-                filterChain.doFilter(request, response);
-                return;
-            }
+        if (request.getRequestURI().equals("/api/sms/test")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
 
         String authHeader = request.getHeader("Authorization");
 
@@ -41,21 +41,19 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             if (jwtUtil.isTokenValid(token)) {
 
                 String username = jwtUtil.extractUsername(token);
-
                 String role = jwtUtil.extractRole(token);
 
-                System.out.println("JWT ROLE = "+role);
+                String authority = role.startsWith("ROLE_") ? role : "ROLE_" + role;
 
-            UsernamePasswordAuthenticationToken authentication =
-                new UsernamePasswordAuthenticationToken(
-                username,
-                null,
-                java.util.Collections.singletonList(
-                        new org.springframework.security.core.authority.SimpleGrantedAuthority(role)
-                )
-        );
-                SecurityContextHolder.getContext()
-                        .setAuthentication(authentication);
+                UsernamePasswordAuthenticationToken authentication =
+                        new UsernamePasswordAuthenticationToken(
+                                username,
+                                null,
+                                java.util.Collections.singletonList(
+                                        new org.springframework.security.core.authority.SimpleGrantedAuthority(authority)
+                                )
+                        );
+                SecurityContextHolder.getContext().setAuthentication(authentication);
             }
         }
 

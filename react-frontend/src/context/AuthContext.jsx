@@ -14,14 +14,13 @@ export function AuthProvider({ children }) {
 
     const [roles, setRoles] = useState(() => {
         const token = localStorage.getItem("accessToken");
-
-        if (!token) {
-            return [];
-        }
+        if (!token) return [];
 
         try {
-            const decoded = jwtDecode(accessToken);
-            return decoded.roles || [];
+            const decoded = jwtDecode(token);
+            // Backend sends single "role" claim (string), not "roles" array
+            const role = decoded.role;
+            return role ? [role.startsWith("ROLE_") ? role : `ROLE_${role}`] : [];
         } catch (error) {
             return [];
         }
@@ -39,13 +38,12 @@ export function AuthProvider({ children }) {
 
         try {
             const decoded = jwtDecode(accessToken);
-            setRoles(decoded.roles || []);
+            const role = decoded.role;
+            setRoles(role ? [role.startsWith("ROLE_") ? role : `ROLE_${role}`] : []);
         } catch (error) {
             console.error("Invalid JWT token");
             setRoles([]);
         }
-
-
     };
 
     const logout = () => {
@@ -57,12 +55,11 @@ export function AuthProvider({ children }) {
         setRoles([]);
     };
 
-    const isAdmin = roles.includes("ROLE_ADMIN");
+    const isAdmin = roles.includes("ROLE_ADMIN") || roles.includes("ADMIN");
 
-    
-    useEffect(()=> {
+    useEffect(() => {
         const token = localStorage.getItem("accessToken");
-        if(token){
+        if (token) {
             setAccessToken(token);
         }
     }, []);
@@ -81,7 +78,6 @@ export function AuthProvider({ children }) {
             {children}
         </AuthContext.Provider>
     );
-
 }
 
 export function useAuth() {

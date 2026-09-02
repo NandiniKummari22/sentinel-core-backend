@@ -1,62 +1,78 @@
 import { useState } from "react";
-import { login } from "../api/authApi"; 
+import { login } from "../api/authApi";
 import { useAuth } from "../context/AuthContext";
-import { TextField, Button, Card, CardContent, Typography, Alert } from "@mui/material";
-import axios from "axios";
 
-function Login( { onLoginSuccess }) {
-    const [username, setUsername] = useState("");
-    const [password, setPassword] = useState("");
-    const [error, setError] = useState("");
-    const { loginUser } = useAuth();
+function Login() {
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const { loginUser } = useAuth();
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setError("");
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
+    setLoading(true);
 
-        try {
-            const res = await login(username, password);
-            console.log("LOGIN RESPONSE: ",res.data);
-            loginUser(res.data.accessToken, res.data.refreshToken);
-            onLoginSuccess();
-        } catch (err) {
-            console.log("LOGIN ERROR: ",err);
-            setError("Invalid username or password.");
-        }
-    };
+    try {
+      const res = await login(username, password);
+      loginUser(res.data.accessToken, res.data.refreshToken);
+    } catch (err) {
+      console.error("LOGIN ERROR:", err);
+      setError("Invalid username or password.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    return (
-        <Card sx={{ maxWidth: 400, margin: "auto", mt: 10 }}>
-            <CardContent>
-                <Typography variant="h5" component="div" gutterBottom>
-                    SentinelCore Login
-                </Typography>
-                {error && <Alert severity="error">{error}</Alert>}
-                <form onSubmit={handleSubmit}>
-                    <TextField
-                        label="Username"
-                        variant="outlined"
-                        fullWidth
-                        margin="normal"
-                        value={username}
-                        onChange={(e) => setUsername(e.target.value)}
-                    />
-                    <TextField
-                        label="Password"
-                        variant="outlined"
-                        fullWidth
-                        margin="normal"
-                        type="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                    />
-                    <Button fullWidth variant="contained" type="submit" style={{marginTop: "16px"}}>
-                        LOGIN
-                    </Button>
-                </form>
-            </CardContent>
-        </Card>
-    );
+  return (
+    <div className="login-page-simple">
+      <div className="login-box">
+        <div className="login-box-header">
+          <h2>SentinelCore Login</h2>
+        </div>
+
+        {error && (
+          <div className="login-error">
+            {error}
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit}>
+          <div className="form-group">
+            <input
+              type="text"
+              className="input"
+              placeholder="Username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              required
+              autoFocus
+            />
+          </div>
+
+          <div className="form-group">
+            <input
+              type="password"
+              className="input"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+          </div>
+
+          <button
+            type="submit"
+            className="btn btn-primary login-btn"
+            disabled={loading}
+          >
+            {loading ? "Signing in..." : "LOGIN"}
+          </button>
+        </form>
+      </div>
+    </div>
+  );
 }
 
 export default Login;

@@ -5,42 +5,24 @@ import org.springframework.data.jpa.domain.Specification;
 
 public class AssetSpecification {
 
-    public static Specification<Asset> searchAssets(
-            String search,
-            String status,
-            String risk) {
-
+    public static Specification<Asset> searchAssets(String search, String status, String risk) {
         return (root, query, cb) -> {
-                Specification<Asset> specification = null;
-            if (search != null && !search.isBlank()) {
+            Specification<Asset> specification = null;
 
+            if (search != null && !search.isBlank()) {
                 Specification<Asset> searchSpec = (root1, query1, cb1) ->
-                        cb1.like(cb1.lower(root1.get("name")),"%" + search.toLowerCase() + "%");
+                        cb1.like(cb1.lower(root1.get("asset_name")),
+                                "%" + search.toLowerCase() + "%");
                 specification = searchSpec;
             }
+
             if (status != null && !status.isBlank()) {
-
                 Specification<Asset> statusSpec = (root1, query1, cb1) ->
-                        cb1.equal(
-                                root1.get("status"),
-                                status
-                        );
+                        cb1.equal(root1.get("status"), status);
 
-                specification = specification == null
-                        ? statusSpec
-                        : specification.and(statusSpec);
+                specification = specification == null ? statusSpec : specification.and(statusSpec);
             }
-            if (risk != null && !risk.isBlank()) {
 
-                Specification<Asset> riskSpec = (root1, query1, cb1) ->
-                        cb1.equal(
-                                root1.get("risk"),
-                                risk
-                        );
-                specification = specification == null
-                        ? riskSpec
-                        : specification.and(riskSpec);
-            }
             if (specification == null) {
                 return cb.conjunction();
             }

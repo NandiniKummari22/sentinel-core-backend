@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service;
 import com.sentinelcore.dto.DashboardSummaryDTO;
 import com.sentinelcore.repository.AssetSpecification;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 
 @Service
@@ -26,10 +28,9 @@ public class AssetService {
         return toDTO(asset);
     }
 
-    public List<AssetDTO> getAllAssets(){
-        return assetRepository.findAll().stream()
-                .map(this::toDTO)
-                .collect(Collectors.toList());
+    public Page<AssetDTO> getAllAssets(Pageable pageable) {
+    return assetRepository.findAll(pageable)
+            .map(this::toDTO);
     }
 
     public AssetDTO createAsset(AssetDTO assetDTO) {
@@ -90,18 +91,9 @@ public class AssetService {
                 .build();
     }
 
-    public List<Asset> searchAndFilter(
-        String search,
-        String status,
-        String risk) {
-
-    Specification<Asset> specification =
-            AssetSpecification.searchAssets(
-                    search,
-                    status,
-                    risk
-            );
-
-    return assetRepository.findAll(specification);
- }    
+    public Page<AssetDTO> searchAndFilter(String search, String status, Pageable pageable) {
+    Specification<Asset> specification = AssetSpecification.searchAssets(search, status, null);
+    return assetRepository.findAll(specification, pageable)
+            .map(this::toDTO);
+    }   
 }
